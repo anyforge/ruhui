@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "ruhui"
-version = "0.1.0"
+version = "0.1.1"
 description = "Ruhui: 非自回归 System 1 决策引擎（中文/多语言），带校准概率。命名取自房谋杜断的杜如晦。"
 readme = "README.md"
 requires-python = ">=3.10"
