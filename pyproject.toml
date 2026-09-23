@@ -1,0 +1,39 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ruhui"
+version = "0.1.0"
+description = "Ruhui: 非自回归 System 1 决策引擎（中文/多语言），带校准概率。命名取自房谋杜断的杜如晦。"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "Apache-2.0" }
+authors = [
+    { name = "AnyForge" }
+]
+keywords = ["decision-model", "rlcd", "calibration", "system-one", "routing", "guardrails", "moderation", "triage", "chinese"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: Apache Software License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+dependencies = [
+    "torch>=2.0.0",
+    "transformers>=4.48.0",
+    "safetensors>=0.4.0",
+    "huggingface_hub>=0.20.0",
+    "numpy>=1.20.0",
+]
+
+[tool.setuptools]
+packages = ["ruhui"]
+
+[project.urls]
+Homepage = "https://github.com/anyforge/ruhui"

@@ -1,0 +1,12 @@
+Ruhui
+Copyright 2026 AnyForge
+
+This product is a fork of Laya (https://github.com/NandhaKishorM/laya),
+copyright the respective contributors, licensed under the Apache License 2.0.
+
+Modifications include, but are not limited to:
+- A multilingual (mmBERT-base) backbone fine-tuned for Chinese/English decision tasks.
+- Package and model renamed to "ruhui".
+- Single-checkpoint routing.
+
+See LICENSE for the full license text.
