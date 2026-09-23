@@ -2,6 +2,12 @@
 
 **A non-autoregressive System 1 decision engine for Chinese & multilingual text, with calibrated probabilities.**
 
+[![PyPI](https://img.shields.io/pypi/v/ruhui.svg)](https://pypi.org/project/ruhui/)
+[![License](https://img.shields.io/badge/License-Apache%202.0-green.svg)](https://opensource.org/licenses/Apache-2.0)
+[![Hugging Face](https://img.shields.io/badge/%F0%9F%A4%97%20Model-anyforge%2Fruhui-blue)](https://huggingface.co/anyforge/ruhui)
+[![ModelScope](https://img.shields.io/badge/ModelScope-anyforge%2Fruhui-624aff.svg)](https://modelscope.cn/models/anyforge/ruhui)
+[![GitHub](https://img.shields.io/badge/GitHub-anyforge%2Fruhui-181717.svg?logo=github)](https://github.com/anyforge/ruhui)
+
 **非自回归 System 1 决策引擎（中文/多语言），带校准概率。**
 
 Named after Du Ruhui (杜如晦, courtesy name Keming 克明) of the "Fang Mou Du Duan" (房谋杜断) pair — Fang Xuanling was the strategist, Du Ruhui the decisive judge. *Ruhui* inherits the "decisive" half: a fast System 1 decision maker that generates no text, has nothing to parse, and therefore cannot hallucinate.
