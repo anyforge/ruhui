@@ -46,6 +46,7 @@ def _split(spec):
 
 # Aliases people are likely to type.
 _ALIASES = {
+    "ruhui": "default",
     "en": "english", "default": "english",
     "multi": "multilingual", "ml": "multilingual",
     "typed": "typed-decisions", "typed_decisions": "typed-decisions",
