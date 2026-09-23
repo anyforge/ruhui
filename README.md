@@ -1,12 +1,12 @@
-# Ruhui · 如晦
-
-**A non-autoregressive System 1 decision engine for Chinese & multilingual text, with calibrated probabilities.**
-
 [![PyPI](https://img.shields.io/pypi/v/ruhui.svg)](https://pypi.org/project/ruhui/)
 [![License](https://img.shields.io/badge/License-Apache%202.0-green.svg)](https://opensource.org/licenses/Apache-2.0)
 [![Hugging Face](https://img.shields.io/badge/%F0%9F%A4%97%20Model-anyforge%2Fruhui-blue)](https://huggingface.co/anyforge/ruhui)
 [![ModelScope](https://img.shields.io/badge/ModelScope-anyforge%2Fruhui-624aff.svg)](https://modelscope.cn/models/anyforge/ruhui)
 [![GitHub](https://img.shields.io/badge/GitHub-anyforge%2Fruhui-181717.svg?logo=github)](https://github.com/anyforge/ruhui)
+
+# Ruhui · 如晦
+
+**A non-autoregressive System 1 decision engine for Chinese & multilingual text, with calibrated probabilities.**
 
 **非自回归 System 1 决策引擎（中文/多语言），带校准概率。**
 
