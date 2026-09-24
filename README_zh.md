@@ -54,12 +54,51 @@ from ruhui.llm import LLMAgent
 # 合并后的完整模型（自包含，无需 base_dir）
 agent = LLMAgent(checkpoint_dir="/path/to/anyforge/ruhui/0.8B")
 
+# choice task
+
 result = agent.predict(
     {"message": "我被重复扣款了，请退款"},
     {"intent": {"type": "choice", "instructions": "客户想做什么？",
                 "criteria": {"refund": "退款", "billing": "账单"}}},
 )
 print(result["answers"])
+
+# score task
+
+result = agent.predict(
+    {"message": "我被重复扣款了，客服三天没回复，今天必须解决，不然就取消订阅！"},
+    {
+        "frustration": {
+            "type": "score",
+            "instructions": "客户有多生气？",
+            "criteria": ["平静", "有点不满", "明显恼火", "非常愤怒，威胁投诉"],
+        },
+        "urgency": {
+            "type": "score",
+            "instructions": "这件事有多紧急？",
+            "criteria": ["不急", "需尽快处理", "紧急且阻塞"],
+        },
+    },
+)
+print(result["answers"])
+
+# noul task
+
+result = agent.predict(
+    {"message": "不然我就取消订阅，去用你们竞争对手的产品"},
+    {
+        "churn_risk": {
+            "type": "noul",
+            "instructions": "客户是否威胁要离开或取消？",
+        },
+        "refund_requested": {
+            "type": "noul",
+            "instructions": "客户是否明确要求退款？",
+        },
+    },
+)
+print(result["answers"])
+
 ```
 
 ### bert 后端（原版，用法不变）
