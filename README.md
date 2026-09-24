@@ -2,72 +2,64 @@
 [![License](https://img.shields.io/badge/License-Apache%202.0-green.svg)](https://opensource.org/licenses/Apache-2.0)
 [![Hugging Face](https://img.shields.io/badge/%F0%9F%A4%97%20Model-anyforge%2Fruhui-blue)](https://huggingface.co/anyforge/ruhui)
 [![ModelScope](https://img.shields.io/badge/ModelScope-anyforge%2Fruhui-624aff.svg)](https://modelscope.cn/models/anyforge/ruhui)
-[![GitHub](https://img.shields.io/badge/GitHub-anyforge%2Fruhui-181717.svg?logo=github)](https://github.com/anyforge/ruhui)
 
 # Ruhui · 如晦
 
 **A non-autoregressive System 1 decision engine for Chinese & multilingual text, with calibrated probabilities.**
-**非自回归 System 1 决策引擎（中文/多语言），带校准概率。**
 
-命名取自「房谋杜断」的杜如晦（字克明），「晦」音近「hui」。房玄龄善谋、杜如晦善断——Ruhui 取「断」之意：System 1 快速决策，不生成文本、无可解析输出、因此无幻觉。
-
-架构参照 [Laya](https://github.com/NandhaKishorM/laya)（Apache 2.0），提供**两个后端**：
-
-| 后端 | 底座 | 特点 | 适用场景 |
-|---|---|---|---|
-| **bert**（原 ruhui）| mmBERT-base（322M）| 33ms 级、CPU 可跑、中英双语 | 高吞吐、低延迟、资源受限 |
-| **llm**（新增）| Qwen3.5-0.8B + LoRA + PointerHead | 大模型通用性更强 | 复杂决策、泛化优先 |
+Named after Du Ruhui (杜如晦, courtesy name Keming 克明) of the legendary *Fang Mou Du Duan* (房谋杜断) pair — Fang Xuanling was the strategist, Du Ruhui the decisive judge. *Ruhui* inherits the "decisive" half: it makes a fast System 1 decision, generates no text, has nothing to parse, and therefore cannot hallucinate.
 
 ---
 
-## Architecture · 架构
+## What it is
 
-三种决策原语，单次前向传播并行输出：
+Ruhui answers **typed questions** — `choice`, `score`, `noul` (yes/no) — over any state (text, email, ticket, or JSON) in a **single forward pass**, returning a **calibrated probability** for every option. No text generation, no parsing, no hallucination.
 
-| Primitive · 原语 | Output · 输出 |
-|---|---|
-| **choice** | top label + full probability distribution + confidence |
-| **score** | expected level on an ordinal rubric |
-| **noul** | calibrated P(true) |
+Two backends share the same interface:
+
+| Backend | Architecture | Size | Latency | Strength |
+|---|---|---|---|---|
+| **bert** | bidirectional encoder (mmBERT-base) + decision head | 322M | ~33 ms | fast, CPU-friendly, Chinese/English |
+| **llm** | Causal LM (Qwen3.5) + LoRA + PointerHead | 0.8B+ | hundreds of ms | stronger generalization |
 
 ---
 
-## Installation · 安装
+## Installation
 
 ```bash
 pip install ruhui
 ```
 
-Python 3.10+。依赖：`torch`、`transformers`、`safetensors`、`huggingface_hub`、`numpy`。
-LLM 后端额外需要 `peft`。
+Python 3.10+. Core deps: `torch`, `transformers`, `safetensors`, `huggingface_hub`, `numpy`. The LLM backend additionally needs `peft`.
 
 ---
 
-## Quick Start · 快速开始
+## Quick Start
 
-### bert 后端（原用法，不变）
+### bert backend (the original, unchanged)
 
 ```python
 import ruhui
 
-agent = ruhui.load("anyforge/ruhui")   # 从 HF/ModelScope 拉取，或本地目录
+agent = ruhui.load("anyforge/ruhui")   # hub, or a local directory
+
 result = agent.predict(
-    {"message": "我被重复扣款了，请退款"},
+    {"message": "I was charged twice, please refund me."},
     {
-        "intent": {"type": "choice", "instructions": "客户想做什么？",
-                   "criteria": {"refund": "退款", "technical": "技术问题", "billing": "账单咨询"}},
-        "churn_risk": {"type": "noul", "instructions": "客户是否威胁要离开？"},
+        "intent": {"type": "choice", "instructions": "What does the customer want?",
+                   "criteria": {"refund": "money back", "technical": "bug or outage", "billing": "invoice question"}},
+        "churn_risk": {"type": "noul", "instructions": "Does the customer threaten to leave?"},
     },
 )
 print(result["answers"])
 ```
 
-### llm 后端（大模型，通用性更强）
+### llm backend (larger model, stronger generalization)
 
 ```python
 from ruhui.llm import LLMAgent
 
-# 合并后的完整模型（自包含，无需 base_dir）
+# a merged (self-contained) model — no base_dir needed
 agent = LLMAgent(checkpoint_dir="anyforge/ruhui/0.8B")
 
 result = agent.predict(
@@ -80,34 +72,80 @@ print(result["answers"])
 
 ---
 
-## Fine-Tuning · 微调
+## How the two backends work
 
-### llm 后端微调（KEV 式：Causal LM + LoRA + PointerHead）
+### bert backend — encoder + decision head
+
+A bidirectional encoder reads the whole input, then a 2-layer decision head scores each option at its own `[MASK]` slot, all in parallel. Probabilities come from a softmax over those option slots, trained with **RLCD** (reinforcement learning from strictly-proper-scoring-rule rewards) so the reported confidence is statistically meaningful.
+
+```
+[CLS] question + [MASK] opt0 [MASK] opt1 ... [SEP] state [SEP]
+   → bidirectional encoder
+   → gather the [MASK] slot vectors
+   → parallel scorer → softmax → calibrated probabilities
+```
+
+### llm backend — Causal LM + PointerHead (KEV-style)
+
+A frozen causal LM runs **prefill-only** (never generates tokens). Each question becomes a branch sharing one state prefix, isolated by a block-causal mask. A pointer head then reads the `<decide>` position and "points" at the option boundary tokens — the attention scores become the option probabilities.
+
+```
+[state] [q: instr <opt>opt A</opt> <opt>opt B</opt> <decide>]
+   → Causal LM (prefill only)
+   → PointerHead: q(decide) · k(option) → logits → softmax
+```
+
+The LoRA adapter is folded into the base weights at inference (or merged permanently with `merge_model.py`).
+
+---
+
+## Decision primitives
+
+| Primitive | Output |
+|---|---|
+| `choice` | top label + full probability distribution + confidence |
+| `score` | expected level on an ordinal rubric |
+| `noul` | calibrated P(true) |
+
+Confidence is normalized entropy (`1 − H(p)/log K`), so it is safe to gate on:
+
+```python
+if conf >= 0.85:
+    route_automatically(dept)   # high confidence
+else:
+    escalate_to_human(dept)     # low confidence
+```
+
+---
+
+## Fine-tuning
+
+### llm backend (KEV-style)
 
 ```bash
-# 1. 软标签 → KEV 格式训练数据
-python scripts/convert_to_kev.py \
-  --soft_dir <soft_label_dir> --out datas/train.jsonl
+# 1. convert soft labels to KEV-format training data
+python scripts/convert_to_kev.py --soft_dir <dir> --out datas/train.jsonl
 
-# 2. 在原作者权重基础上微调（delta 模式）
+# 2. fine-tune from an existing checkpoint (delta mode)
 python scripts/finetune.py \
-  --data datas/train_final.jsonl \
-  --base models/Qwen3.5-0.8B-Base \
-  --init_from models/kev-0.8b \
+  --data datas/train.jsonl \
+  --base Qwen/Qwen3.5-0.8B-Base \
+  --init_from anyforge/ruhui/0.8B \
   --out runs/ruhui-0.8b \
   --epochs 2 --device cuda
 
-# 3. 断点续跑
+# 3. resume if interrupted
 python scripts/finetune.py ... --resume
 
-# 4. 合并 LoRA 成完整模型
+# 4. merge LoRA into the base weights (bf16 halves the size)
 python scripts/merge_model.py \
   --checkpoint runs/ruhui-0.8b \
-  --base models/Qwen3.5-0.8B-Base \
-  --out runs/ruhui-0.8b-merged
+  --base Qwen/Qwen3.5-0.8B-Base \
+  --out runs/ruhui-0.8b-merged \
+  --dtype bf16
 ```
 
-### bert 后端微调（Laya 式：encoder + 决策头）
+### bert backend (Laya-style)
 
 ```bash
 python scripts/train.py \
@@ -119,36 +157,35 @@ python scripts/train.py \
 
 ---
 
-## Repository Layout · 目录结构
+## Repository layout
 
 ```
 ruhuipro/
   ruhui/
-    bert/           # bert 后端（原 ruhui：agent/router/common/presets/...）
-    llm/            # llm 后端（KEV 式：model/api/checkpoint/train/data/agent）
-  models/           # 本地底座 + adapter
-  datas/            # 转换后的训练数据
+    bert/           # encoder backend (agent / router / common / presets / ...)
+    llm/            # LLM backend (model / api / checkpoint / train / data / agent)
   scripts/
-    convert_to_kev.py      # 软标签 → KEV 格式
-    finetune.py            # llm 微调启动（支持 --init_from / --resume）
-    merge_model.py         # LoRA 合并导出
-    train.py               # bert 后端微调
+    convert_to_kev.py      # soft labels → KEV format
+    finetune.py            # LLM fine-tune (--init_from / --resume)
+    merge_model.py         # LoRA merge + dtype control
+    train.py               # bert fine-tune
+  tests/
 ```
 
 ---
 
-## Model Repositories · 模型仓库
+## Model repositories
 
-- Hugging Face: `anyforge/ruhui`
-  - 根目录 = bert 后端模型（322M）
-  - `0.8B/` 子目录 = LLM 后端 0.8B（Qwen3.5-0.8B 合并模型）
-  - `4B/` 子目录 = LLM 后端 4B（计划中）
-- ModelScope: `anyforge/ruhui`（同上）
+- Hugging Face: `anyforge/ruhui` (root = bert model; `0.8B/` = LLM 0.8B merged model)
+- ModelScope: `anyforge/ruhui` (same layout)
 
-> bert 用 `ruhui.load("anyforge/ruhui")` 加载；
-> LLM 用 `ruhui.llm.LLMAgent(checkpoint_dir="anyforge/ruhui/0.8B")` 加载。
+---
+
+## Acknowledgments
+
+- **Laya** ([NandhaKishorM/laya](https://github.com/NandhaKishorM/laya), Apache 2.0) — the non-autoregressive System 1 decision paradigm and RLCD training that the bert backend is forked from.
+- **KEV** ([jaredpalmer/kev](https://github.com/jaredpalmer/kev), Apache 2.0) — the Causal LM + LoRA + PointerHead architecture that the llm backend is built on.
 
 ## License
 
-Apache 2.0 (inherited from Laya). Developed by AnyForge.
-Apache 2.0（参照 Laya）。Developed by AnyForge。
+Apache 2.0. Developed by AnyForge.

@@ -27,6 +27,8 @@ def main():
     ap.add_argument("--checkpoint", required=True, help="训练产出目录（含 adapter_model.safetensors + head.pt）")
     ap.add_argument("--base", required=True, help="底座目录（本地路径）")
     ap.add_argument("--out", required=True, help="合并后输出目录")
+    ap.add_argument("--dtype", default="bf16", choices=["fp32", "bf16", "fp16"],
+                    help="合并后权重的 dtype（默认 bf16，体积减半、概率误差<0.01；fp32 为训练主权重精度）")
     args = ap.parse_args()
 
     import torch
@@ -42,24 +44,25 @@ def main():
     base_name = os.path.abspath(args.base) if os.path.isdir(args.base) else meta.base
     local_base = os.path.isdir(args.base)
     tok = load_tokenizer(base_name, revision=None if local_base else meta.base_revision)
-    # 本地底座路径覆盖（如果 base 是 hub id 但用户传了本地目录）
-    dtype = torch.bfloat16 if meta.weights_dtype == "bf16" else torch.float32
+    # 合并后目标 dtype（用户可控，默认 bf16 减半体积）
+    target_dtype = {"fp32": torch.float32, "bf16": torch.bfloat16, "fp16": torch.float16}[args.dtype]
 
-    print(f"加载底座 {base_name} ...")
+    print(f"加载底座 {base_name} (fp32，merge 在 fp32 下精确进行) ...")
     model = DecisionModel(
         base_name, tok, "cpu", lora=None,
         revision=None if local_base else meta.base_revision,
         head_dim=meta.head_dim,
         option_isolation=meta.option_isolation,
-        dtype=dtype,
+        dtype=torch.float32,   # 固定 fp32 加载，merge 的 W+=delta 需在 fp32 做
     )
 
     # 3. 挂 adapter + 合并（与 checkpoint._load_torch 完全一致）
     print(f"挂载 LoRA adapter {args.checkpoint} ...")
     model.lm = PeftModel.from_pretrained(model.lm, args.checkpoint, torch_device="cpu").to("cpu")
     model.lm = model.lm.merge_and_unload()
-    if dtype != torch.float32:
-        model.lm = model.lm.to(dtype)
+    if target_dtype != torch.float32:
+        model.lm = model.lm.to(target_dtype)   # merge 完成后才转目标 dtype
+        print(f"转换 dtype -> {args.dtype}")
 
     # 4. 保存完整模型（lm 部分 + head）
     os.makedirs(args.out, exist_ok=True)
