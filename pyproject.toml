@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "ruhui"
-version = "0.1.1"
+version = "0.2.0"
 description = "Ruhui: 非自回归 System 1 决策引擎（中文/多语言），带校准概率。命名取自房谋杜断的杜如晦。"
 readme = "README.md"
 requires-python = ">=3.10"
@@ -30,10 +30,11 @@ dependencies = [
     "safetensors>=0.4.0",
     "huggingface_hub>=0.20.0",
     "numpy>=1.20.0",
+    "peft>=0.12.0",
 ]
 
 [tool.setuptools]
-packages = ["ruhui"]
+packages = ["ruhui", "ruhui.bert", "ruhui.llm"]
 
 [project.urls]
 Homepage = "https://github.com/anyforge/ruhui"

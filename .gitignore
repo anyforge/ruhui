@@ -5,3 +5,10 @@ dist/
 build/
 .venv/
 .DS_Store
+
+# 不推送：训练数据、模型权重、上传脚本与缓存
+datas/
+models/
+scripts/fetch_kev_synthetic.py
+upload.py
+.ms_upload_cache

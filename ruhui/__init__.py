@@ -1,59 +1,30 @@
-"""Ruhui: 非自回归 System 1 决策引擎（中文/多语言），带校准概率。
+"""Ruhui（如晦）：非自回归 System 1 决策引擎（中文/多语言），带校准概率。
 
-参照 Laya 架构 fork，命名取自房谋杜断的杜如晦（字克明），"晦"音近"hui"，
-寓"谋断"——System 1 快速决策。
+两个后端：
+  - bert 后端（原 ruhui）：encoder + 决策头，33ms 级，`ruhui.load(...)` / `ruhui.Agent(...)`
+  - llm 后端（KEV 式）：Causal LM + LoRA + PointerHead，`ruhui.LLMAgent(...)`
+
+原用法完全不变：`ruhui.load("anyforge/ruhui")` 仍是 bert 后端。
 """
+from .bert import *  # noqa: F401,F403  —— 原 ruhui 全部接口
+from .bert import __all__ as _BERT_ALL
 
-from .agent import Agent, RLAgent, load
-from .common import (
-    QTYPES,
-    QTYPE_NAMES,
-    confidence_from_probs,
-    ece_score,
-    proper_reward,
-    render_options,
-    td_lambda_targets,
-)
-from .email import clean_email_body, email_state
-from .lang import analyse as detect_language
-from .lang import detect_script, is_english
-from .presets import (
-    email_questions,
-    guard_questions,
-    moderation_questions,
-    router_questions,
-    triage_questions,
-)
-from .router import DEFAULT_MODELS, RouteDecision, Router
-from .shortlist import embed_fn_from_agent, predict_shortlist, shortlist_choice
+__version__ = "0.2.0"
 
-__version__ = "0.1.1"
-__all__ = [
-    "Agent",
-    "RLAgent",
-    "load",
-    "Router",
-    "RouteDecision",
-    "DEFAULT_MODELS",
-    "shortlist_choice",
-    "predict_shortlist",
-    "embed_fn_from_agent",
-    "detect_language",
-    "detect_script",
-    "is_english",
-    "clean_email_body",
-    "email_questions",
-    "email_state",
-    "guard_questions",
-    "moderation_questions",
-    "router_questions",
-    "triage_questions",
-    "proper_reward",
-    "td_lambda_targets",
-    "ece_score",
-    "confidence_from_probs",
-    "render_options",
-    "QTYPES",
-    "QTYPE_NAMES",
-    "__version__",
-]
+# LLM 后端（延迟导入，避免 torch 未装时报错）
+def _llm_all():
+    return ["LLMAgent"]
+
+
+def LLMAgent(*args, **kwargs):
+    """LLM 后端入口：与 Agent 同款 predict 用法。
+
+    agent = ruhui.LLMAgent(checkpoint_dir="models/kev-0.8b", base_dir="models/Qwen3.5-0.8B-Base")
+    agent.predict(state, questions)
+    """
+    from .llm.agent import LLMAgent as _A
+
+    return _A(*args, **kwargs)
+
+
+__all__ = list(_BERT_ALL) + ["LLMAgent", "__version__"]
