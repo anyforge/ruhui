@@ -41,7 +41,7 @@ Python 3.10+。核心依赖：`torch`、`transformers`、`safetensors`、`huggin
 ```python
 import ruhui
 
-agent = ruhui.load("anyforge/ruhui")   # 从仓库拉取，或本地目录
+agent = ruhui.load("/path/to/anyforge/ruhui")   # 从仓库拉取，或本地目录
 
 result = agent.predict(
     {"message": "我被重复扣款了，请退款"},
@@ -60,7 +60,7 @@ print(result["answers"])
 from ruhui.llm import LLMAgent
 
 # 合并后的完整模型（自包含，无需 base_dir）
-agent = LLMAgent(checkpoint_dir="anyforge/ruhui/0.8B")
+agent = LLMAgent(checkpoint_dir="/path/to/anyforge/ruhui/0.8B")
 
 result = agent.predict(
     {"message": "我被重复扣款了，请退款"},
