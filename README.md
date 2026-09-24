@@ -236,6 +236,14 @@ A ready-to-use agent skill is shipped at [`skills/ruhui/SKILL.md`](skills/ruhui/
 
 ---
 
+## Support
+
+If you find Ruhui useful, you can buy the author a coffee. Thank you! 🙏
+
+<img src="docs/images/alipay.png" width="200" alt="Alipay"><img src="docs/images/wechatpay.png" width="200" alt="WeChat Pay">
+
+---
+
 ## Acknowledgments
 
 - **Laya** ([NandhaKishorM/laya](https://github.com/NandhaKishorM/laya), Apache 2.0) — the non-autoregressive System 1 decision paradigm and RLCD training that the bert backend is forked from.

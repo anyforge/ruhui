@@ -236,6 +236,14 @@ ruhuipro/
 
 ---
 
+## 捐献
+
+如果觉得 Ruhui 对您有用，欢迎请作者喝杯咖啡。感谢！🙏
+
+<img src="docs/images/alipay.png" width="200" alt="支付宝"><img src="docs/images/wechatpay.png" width="200" alt="微信支付">
+
+---
+
 ## 致谢
 
 - **Laya**（[NandhaKishorM/laya](https://github.com/NandhaKishorM/laya)，Apache 2.0）—— bert 后端 fork 的非自回归 System 1 决策范式与 RLCD 训练方法。
