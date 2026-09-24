@@ -27,7 +27,7 @@ Two backends share the same interface:
 ## Installation
 
 ```bash
-pip install ruhui
+pip install ruhui -U
 ```
 
 Python 3.10+. Core deps: `torch`, `transformers`, `safetensors`, `huggingface_hub`, `numpy`. The LLM backend additionally needs `peft`.
@@ -35,6 +35,22 @@ Python 3.10+. Core deps: `torch`, `transformers`, `safetensors`, `huggingface_hu
 ---
 
 ## Quick Start
+
+### llm backend (larger model, stronger generalization)
+
+```python
+from ruhui.llm import LLMAgent
+
+# a merged (self-contained) model — no base_dir needed
+agent = LLMAgent(checkpoint_dir="/path/to/anyforge/ruhui/0.8B")
+
+result = agent.predict(
+    {"message": "我被重复扣款了，请退款"},
+    {"intent": {"type": "choice", "instructions": "客户想做什么？",
+                "criteria": {"refund": "退款", "billing": "账单"}}},
+)
+print(result["answers"])
+```
 
 ### bert backend (the original, unchanged)
 
@@ -50,22 +66,6 @@ result = agent.predict(
                    "criteria": {"refund": "退款", "technical": "技术问题", "billing": "账单咨询"}},
         "churn_risk": {"type": "noul", "instructions": "客户是否威胁要离开？"},
     },
-)
-print(result["answers"])
-```
-
-### llm backend (larger model, stronger generalization)
-
-```python
-from ruhui.llm import LLMAgent
-
-# a merged (self-contained) model — no base_dir needed
-agent = LLMAgent(checkpoint_dir="/path/to/anyforge/ruhui/0.8B")
-
-result = agent.predict(
-    {"message": "我被重复扣款了，请退款"},
-    {"intent": {"type": "choice", "instructions": "客户想做什么？",
-                "criteria": {"refund": "退款", "billing": "账单"}}},
 )
 print(result["answers"])
 ```
