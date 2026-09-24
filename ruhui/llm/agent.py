@@ -16,7 +16,6 @@
                     "criteria": {"refund": "退款", "billing": "账单"}}},
     )
 """
-import json
 import os
 from typing import Any, Dict, Optional, Union
 

@@ -9,6 +9,15 @@
 from .bert import *  # noqa: F401,F403  —— 原 ruhui 全部接口
 from .bert import __all__ as _BERT_ALL
 
+# 顶层模块别名：原 ruhui 的模块移到了 ruhui.bert 下，这里把子模块注册到 sys.modules，
+# 让 `from ruhui.router import ...` / `from ruhui.common import ...` 等旧导入路径继续可用。
+import sys as _sys
+from .bert import agent, common, email, lang, presets, router, shortlist  # noqa: F401
+for _name, _mod in (("agent", agent), ("common", common), ("email", email),
+                    ("lang", lang), ("presets", presets), ("router", router),
+                    ("shortlist", shortlist)):
+    _sys.modules.setdefault(f"ruhui.{_name}", _mod)
+
 __version__ = "0.2.0"
 
 # LLM 后端（延迟导入，避免 torch 未装时报错）

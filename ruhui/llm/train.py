@@ -7,7 +7,7 @@ fly from the public sources, or your own JSONL), with the pointer head trained f
 
 Batch size is small (variable-length records with custom masks) and gradients are accumulated over --accum micro-batches.
 """
-import argparse, contextlib, json, math, random, resource, sys, time
+import argparse, contextlib, math, random, resource, sys, time
 from collections import Counter
 from dataclasses import dataclass
 from pathlib import Path
