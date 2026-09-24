@@ -27,7 +27,7 @@ Ruhui 在**单次前向传播**里回答**类型化问题**——`choice`（选�
 ## 安装
 
 ```bash
-pip install ruhui
+pip install ruhui -U
 ```
 
 Python 3.10+。核心依赖：`torch`、`transformers`、`safetensors`、`huggingface_hub`、`numpy`。LLM 后端额外需要 `peft`。
@@ -35,6 +35,22 @@ Python 3.10+。核心依赖：`torch`、`transformers`、`safetensors`、`huggin
 ---
 
 ## 快速开始
+
+### llm 后端（大模型，通用性更强）
+
+```python
+from ruhui.llm import LLMAgent
+
+# 合并后的完整模型（自包含，无需 base_dir）
+agent = LLMAgent(checkpoint_dir="/path/to/anyforge/ruhui/0.8B")
+
+result = agent.predict(
+    {"message": "我被重复扣款了，请退款"},
+    {"intent": {"type": "choice", "instructions": "客户想做什么？",
+                "criteria": {"refund": "退款", "billing": "账单"}}},
+)
+print(result["answers"])
+```
 
 ### bert 后端（原版，用法不变）
 
@@ -50,22 +66,6 @@ result = agent.predict(
                    "criteria": {"refund": "退款", "technical": "技术问题", "billing": "账单咨询"}},
         "churn_risk": {"type": "noul", "instructions": "客户是否威胁要离开？"},
     },
-)
-print(result["answers"])
-```
-
-### llm 后端（大模型，通用性更强）
-
-```python
-from ruhui.llm import LLMAgent
-
-# 合并后的完整模型（自包含，无需 base_dir）
-agent = LLMAgent(checkpoint_dir="/path/to/anyforge/ruhui/0.8B")
-
-result = agent.predict(
-    {"message": "我被重复扣款了，请退款"},
-    {"intent": {"type": "choice", "instructions": "客户想做什么？",
-                "criteria": {"refund": "退款", "billing": "账单"}}},
 )
 print(result["answers"])
 ```
