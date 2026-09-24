@@ -41,7 +41,7 @@ Python 3.10+. Core deps: `torch`, `transformers`, `safetensors`, `huggingface_hu
 ```python
 import ruhui
 
-agent = ruhui.load("anyforge/ruhui")   # hub, or a local directory
+agent = ruhui.load("/path/to/anyforge/ruhui")   # hub, or a local directory
 
 result = agent.predict(
     {"message": "我被重复扣款了，请退款"},
@@ -60,7 +60,7 @@ print(result["answers"])
 from ruhui.llm import LLMAgent
 
 # a merged (self-contained) model — no base_dir needed
-agent = LLMAgent(checkpoint_dir="anyforge/ruhui/0.8B")
+agent = LLMAgent(checkpoint_dir="/path/to/anyforge/ruhui/0.8B")
 
 result = agent.predict(
     {"message": "我被重复扣款了，请退款"},
