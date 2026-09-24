@@ -24,6 +24,16 @@ Two backends share the same interface:
 
 ---
 
+| Resource | Link | Notes |
+|---|---|---|
+| 📦 **PyPI** | [![PyPI](https://img.shields.io/pypi/v/ruhui.svg)](https://pypi.org/project/ruhui/) | `pip install ruhui -U` |
+| 🐙 **GitHub** | [![GitHub](https://img.shields.io/badge/GitHub-anyforge%2Fruhui-181717.svg?logo=github)](https://github.com/anyforge/ruhui) | Source + bilingual README + skill |
+| 🧩 **ModelScope** | [![ModelScope](https://img.shields.io/badge/ModelScope-anyforge%2Fruhui-624aff.svg)](https://modelscope.cn/models/anyforge/ruhui) | Model repo (bert + 0.8B) |
+| 🤗 **Hugging Face** | [![HF](https://img.shields.io/badge/%F0%9F%A4%97%20Model-anyforge%2Fruhui-blue)](https://huggingface.co/anyforge/ruhui) | Model repo (bert + 0.8B) |
+| 🛠️ **OpenClaw Skill** | [![OpenClaw](https://img.shields.io/badge/OpenClaw-Skill-orange.svg)](https://clawhub.ai/anyforge/skills/ruhui) | Agent skill (ClawHub) |
+| 🛠️ **ModelScope Skill** | [![ModelScope Skill](https://img.shields.io/badge/ModelScope-Skill-624aff.svg)](https://www.modelscope.cn/skills/anyforge/ruhui) | Agent skill (ModelScope) |
+---
+
 ## Installation
 
 ```bash
