@@ -181,6 +181,12 @@ ruhuipro/
 
 ---
 
+## 技能（Skill）
+
+本仓库自带一份开箱即用的智能体技能 [`skills/ruhui/SKILL.md`](skills/ruhui/SKILL.md)，教编码智能体（Claude、Cursor、Codex 等）**何时、如何**把 Ruhui 当作编程原语来用：怎么选原语、怎么设计问题、怎么在脚本或 FastAPI 服务里复用已加载的模型、以及常见坑。直接从本仓库安装，或把该文件加载进你的智能体即可。
+
+---
+
 ## 致谢
 
 - **Laya**（[NandhaKishorM/laya](https://github.com/NandhaKishorM/laya)，Apache 2.0）—— bert 后端 fork 的非自回归 System 1 决策范式与 RLCD 训练方法。

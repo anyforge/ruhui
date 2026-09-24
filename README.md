@@ -181,6 +181,12 @@ ruhuipro/
 
 ---
 
+## Skill
+
+A ready-to-use agent skill is shipped at [`skills/ruhui/SKILL.md`](skills/ruhui/SKILL.md). It teaches coding agents (Claude, Cursor, Codex, etc.) *when* and *how* to use Ruhui as a programming primitive: which primitive to pick, how to design questions, how to reuse a loaded agent in a script or FastAPI service, and common pitfalls. Install it directly from this repo or load the file into your agent.
+
+---
+
 ## Acknowledgments
 
 - **Laya** ([NandhaKishorM/laya](https://github.com/NandhaKishorM/laya), Apache 2.0) — the non-autoregressive System 1 decision paradigm and RLCD training that the bert backend is forked from.
