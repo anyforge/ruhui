@@ -44,11 +44,11 @@ import ruhui
 agent = ruhui.load("anyforge/ruhui")   # hub, or a local directory
 
 result = agent.predict(
-    {"message": "I was charged twice, please refund me."},
+    {"message": "我被重复扣款了，请退款"},
     {
-        "intent": {"type": "choice", "instructions": "What does the customer want?",
-                   "criteria": {"refund": "money back", "technical": "bug or outage", "billing": "invoice question"}},
-        "churn_risk": {"type": "noul", "instructions": "Does the customer threaten to leave?"},
+        "intent": {"type": "choice", "instructions": "客户想做什么？",
+                   "criteria": {"refund": "退款", "technical": "技术问题", "billing": "账单咨询"}},
+        "churn_risk": {"type": "noul", "instructions": "客户是否威胁要离开？"},
     },
 )
 print(result["answers"])
