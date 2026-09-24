@@ -26,7 +26,7 @@ Ruhui 在**单次前向传播**里回答**类型化问题**——`choice`（选�
 
 | 资源 | 链接 | 说明 |
 |---|---|---|
-| 📦 **PyPI** | [![PyPI](https://img.shields.io/pypi/v/ruhui.svg)](https://pypi.org/project/ruhui/) | `pip install ruhui` |
+| 📦 **PyPI** | [![PyPI](https://img.shields.io/pypi/v/ruhui.svg)](https://pypi.org/project/ruhui/) | `pip install ruhui -U` |
 | 🐙 **GitHub** | [![GitHub](https://img.shields.io/badge/GitHub-anyforge%2Fruhui-181717.svg?logo=github)](https://github.com/anyforge/ruhui) | 源码 + 双语 README + skill |
 | 🧩 **ModelScope** | [![ModelScope](https://img.shields.io/badge/ModelScope-anyforge%2Fruhui-624aff.svg)](https://modelscope.cn/models/anyforge/ruhui) | 模型仓库（bert + 0.8B） |
 | 🤗 **Hugging Face** | [![HF](https://img.shields.io/badge/%F0%9F%A4%97%20Model-anyforge%2Fruhui-blue)](https://huggingface.co/anyforge/ruhui) | 模型仓库（bert + 0.8B） |
